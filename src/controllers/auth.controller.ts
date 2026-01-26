@@ -6,6 +6,8 @@ const authService = new AuthService();
 export class AuthController {
     async register(req: Request, res: Response, next: NextFunction) {
         try {
+            // validateBody 미들웨어를 통과했으므로 req.body는 안전합니다.
+            // Zod의 .refine을 통해 비밀번호 일치 여부도 이미 검증되었습니다.
             const user = await authService.register(req.body);
 
             res.status(201).json({

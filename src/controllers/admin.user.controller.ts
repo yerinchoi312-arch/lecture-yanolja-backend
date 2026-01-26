@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { AdminUserService } from '../services/admin.user.service';
+import { PaginationQueryInput } from '../schemas/admin.user.schema';
 
 const adminUserService = new AdminUserService();
 
 export class AdminUserController {
     async getUsers(req: Request, res: Response, next: NextFunction) {
         try {
-            const page = Number(req.query.page) || 1;
-            const limit = Number(req.query.limit) || 10;
+            const { page, limit } = req.query as unknown as PaginationQueryInput;
 
             const result = await adminUserService.getUsers(page, limit);
 
