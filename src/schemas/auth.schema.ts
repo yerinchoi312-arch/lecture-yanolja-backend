@@ -5,8 +5,6 @@ import { registry } from "../config/openApi"; // registry 가져오기
 
 extendZodWithOpenApi(z);
 
-// --- 1. Schemas (데이터 구조 및 유효성 검사) ---
-
 export const UserResponseSchema = z
     .object({
         id: z.number().openapi({ example: 1 }),
