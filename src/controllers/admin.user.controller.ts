@@ -7,11 +7,23 @@ const adminUserService = new AdminUserService();
 export class AdminUserController {
     async getUsers(req: Request, res: Response, next: NextFunction) {
         try {
-            const { page, limit } = req.query as unknown as PaginationQueryInput;
+            const page = Number(req.query.page) || 1;
+            const limit = Number(req.query.limit) || 10;
+            const searchTerm = req.query.search as string;
 
-            const result = await adminUserService.getAllUsers(page, limit);
+            const { users, total } = await adminUserService.getAllUsers(page, limit, searchTerm);
 
-            res.status(200).json(result);
+            const totalPages = Math.ceil(total / limit);
+
+            res.status(200).json({
+                data: users,
+                pagination: {
+                    totalUsers: total,
+                    totalPages: totalPages,
+                    currentPage: page,
+                    limit: limit,
+                },
+            });
         } catch (error) {
             next(error);
         }
