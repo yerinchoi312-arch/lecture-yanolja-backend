@@ -17,7 +17,11 @@ export class CategoryController {
         }
     }
 
-    async getSubCategoryDetail(req: Request, res: Response, next: NextFunction) {
+    async getSubCategoryDetail(
+        req: Request<{ path: string; subId: string }>,
+        res: Response,
+        next: NextFunction,
+    ) {
         try {
             const { path, subId } = req.params;
 
