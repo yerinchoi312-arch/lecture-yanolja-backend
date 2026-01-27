@@ -9,6 +9,8 @@ import { errorMiddleware } from "./middlewares/error.middleware";
 import { generateOpenApiDocs } from "./config/openApi";
 import { apiReference } from "@scalar/express-api-reference";
 import userRoute from "./routes/user.route";
+import categoryRoute from "./routes/category.route";
+import adminCategoryRoute from "./routes/admin.category.route";
 
 const app = express();
 const PORT = process.env.PORT || 4101;
@@ -32,9 +34,12 @@ app.use(
 );
 
 app.use(validateClientKey);
+
 app.use("/api/auth", authRoute);
-app.use("/api/admin", adminUserRoute);
+app.use("/api/admin/users", adminUserRoute);
+app.use("/api/admin/categories", adminCategoryRoute);
 app.use("/api/users", userRoute);
+app.use("/api/categories", categoryRoute);
 
 app.use(errorMiddleware);
 
