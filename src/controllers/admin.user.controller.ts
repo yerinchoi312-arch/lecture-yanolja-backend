@@ -9,7 +9,7 @@ export class AdminUserController {
         try {
             const { page, limit } = req.query as unknown as PaginationQueryInput;
 
-            const result = await adminUserService.getUsers(page, limit);
+            const result = await adminUserService.getAllUsers(page, limit);
 
             res.status(200).json(result);
         } catch (error) {

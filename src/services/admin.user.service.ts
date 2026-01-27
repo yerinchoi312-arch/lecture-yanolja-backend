@@ -5,34 +5,44 @@ import { HttpException } from "../utils/exception.utils";
 import { CreateUserInput, UpdateUserInput } from "../schemas/admin.user.schema";
 
 export class AdminUserService {
-    async getUsers(page: number, limit: number) {
+    async getAllUsers(page: number = 1, limit: number = 10, searchTerm?: string) {
         const skip = (page - 1) * limit;
 
+        const whereClause = searchTerm
+            ? {
+                OR: [
+                    { username: { contains: searchTerm } },
+                    { name: { contains: searchTerm } },
+                    { email: { contains: searchTerm } },
+                ],
+            }
+            : {};
+
         const [total, users] = await prisma.$transaction([
-            prisma.user.count(),
+            prisma.user.count({
+                where: whereClause,
+            }),
             prisma.user.findMany({
+                where: whereClause,
                 skip: skip,
                 take: limit,
                 orderBy: { createdAt: "desc" },
+                select: {
+                    id: true,
+                    username: true,
+                    name: true,
+                    email: true,
+                    phone: true,
+                    birthdate: true,
+                    gender: true,
+                    role: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
             }),
         ]);
 
-        const totalPages = Math.ceil(total / limit);
-
-        const sanitizedUsers = users.map(user => {
-            const { password, ...userWithoutPassword } = user;
-            return userWithoutPassword;
-        });
-
-        return {
-            data: sanitizedUsers,
-            pagination: {
-                totalUsers: total,
-                totalPages: totalPages,
-                currentPage: page,
-                limit: limit,
-            },
-        };
+        return { total, users };
     }
 
     async getUserById(userId: number) {
