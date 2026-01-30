@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { registry } from "../config/openApi";
-import { ProductResponseSchema } from "./product.schema";
+import { ProductDetailSchema } from "./product.schema";
 
 extendZodWithOpenApi(z);
 
@@ -32,7 +32,7 @@ export const SubCategoryDetailSchema = z
             path: z.string().openapi({ example: "hotel" }),
         }),
         products: z
-            .array(ProductResponseSchema)
+            .array(ProductDetailSchema)
             .openapi({ description: "해당 카테고리의 상품 목록" }),
     })
     .openapi("SubCategoryDetailResponse");
