@@ -14,7 +14,7 @@ export class ProductController {
                 subCategoryId: req.query.subCategoryId
                     ? Number(req.query.subCategoryId)
                     : undefined,
-                keyword: req.query.keyword + "",
+                keyword: req.query.keyword ? String(req.query.keyword) : undefined,
             };
 
             const { total, products } = await productService.getProducts(query);
