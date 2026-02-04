@@ -5,6 +5,8 @@ import { ProductDetailSchema } from "./product.schema";
 
 extendZodWithOpenApi(z);
 
+const OPEN_API_TAG = "Categories";
+
 const SubCategorySimpleSchema = z.object({
     id: z.number().openapi({ example: 1 }),
     name: z.string().openapi({ example: "디럭스 룸" }),
@@ -40,7 +42,7 @@ export const SubCategoryDetailSchema = z
 registry.registerPath({
     method: "get",
     path: "/categories",
-    tags: ["Categories"],
+    tags: [OPEN_API_TAG],
     summary: "카테고리 메뉴 조회",
     description: "1차 카테고리 목록과 하위 2차 카테고리 구조를 조회합니다.",
     responses: {
@@ -61,7 +63,7 @@ registry.registerPath({
 registry.registerPath({
     method: "get",
     path: "/categories/{path}/{subId}",
-    tags: ["Categories"],
+    tags: [OPEN_API_TAG],
     summary: "2차 카테고리 상세 조회 (상품 포함)",
     description:
         "1차 카테고리의 path(예: hotel)와 2차 카테고리의 id를 이용해 상품 목록을 조회합니다.",

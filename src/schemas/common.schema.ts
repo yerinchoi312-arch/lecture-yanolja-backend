@@ -13,7 +13,7 @@ export const PaginationQuerySchema = z.object({
     limit: z.coerce
         .number()
         .min(1)
-        .max(100) // 너무 큰 요청 방지
+        .max(100)
         .default(10)
         .openapi({ example: 10, description: "한 페이지당 항목 수 (기본값: 10)" }),
 });

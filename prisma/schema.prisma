@@ -18,6 +18,31 @@ enum Role {
   ADMIN
 }
 
+enum OrderStatus {
+  PENDING
+  PAID
+  CANCELED
+}
+
+enum PaymentStatus {
+  PAID
+  CANCELLED
+  FAILED
+}
+
+enum InquiryType {
+  RESERVATION
+  PRODUCT
+  EXCHANGE_RETURN
+  MEMBER
+  OTHER
+}
+
+enum InquiryStatus {
+  PENDING
+  ANSWERED
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -30,7 +55,10 @@ model User {
   birthdate String
   gender    Gender
   role      Role
+
   reviews   Review[]
+  orders    Order[]
+  inquiries Inquiry[]
 }
 
 model Category {
@@ -94,8 +122,57 @@ model RoomType {
   originPrice Int
   price       Int
 
-  productId Int
-  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId  Int
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+  reviews    Review[]
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  totalPrice Int
+  status     OrderStatus @default(PENDING)
+
+  recipientName  String
+  recipientPhone String
+  adultNum       Int
+  childrenNum    Int
+  checkInDate    DateTime
+  checkOutDate   DateTime
+
+  userId  Int
+  user    User        @relation(fields: [userId], references: [id])
+  items   OrderItem[]
+  payment Payment?
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  quantity  Int
+  price     Int
+
+  orderId    Int
+  order      Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  roomTypeId Int?
+  roomType   RoomType? @relation(fields: [roomTypeId], references: [id], onDelete: SetNull)
+}
+
+model Payment {
+  id          Int           @id @default(autoincrement())
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  method      String
+  amount      Int
+  status      PaymentStatus @default(PAID)
+  requestedAt DateTime      @default(now())
+  approvedAt  DateTime?
+
+  orderId Int   @unique
+  order   Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
 
 model Review {
@@ -108,9 +185,11 @@ model Review {
   userId Int
   user   User @relation(fields: [userId], references: [id])
 
-  productId Int
-  product   Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
-  images    ReviewImage[]
+  roomTypeId Int
+  roomType   RoomType      @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  images     ReviewImage[]
+  product    Product?      @relation(fields: [productId], references: [id])
+  productId  Int?
 }
 
 model ReviewImage {
@@ -121,4 +200,30 @@ model ReviewImage {
 
   reviewId Int
   review   Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+}
+
+model Inquiry {
+  id         Int           @id @default(autoincrement())
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  type       InquiryType // 문의 유형
+  title      String
+  content    String        @db.Text
+  status     InquiryStatus @default(PENDING)
+  answer     String?       @db.Text // 관리자 답변 내용
+  answeredAt DateTime? // 답변 일시
+  userId     Int
+
+  user   User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images InquiryImage[]
+}
+
+model InquiryImage {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  url       String
+
+  inquiryId Int
+  inquiry   Inquiry @relation(fields: [inquiryId], references: [id], onDelete: Cascade)
 }

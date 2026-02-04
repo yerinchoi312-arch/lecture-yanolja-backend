@@ -5,6 +5,8 @@ import { registry } from "../config/openApi";
 
 extendZodWithOpenApi(z);
 
+const OPEN_API_TAG = "Admin/Users";
+
 export const UserParamSchema = z.object({
     id: z.coerce.number().openapi({ example: 1, description: "사용자 ID" }),
 });
@@ -61,7 +63,7 @@ export type PaginationQueryInput = z.infer<typeof PaginationQuerySchema>;
 registry.registerPath({
     method: "get",
     path: "/admin/users",
-    tags: ["Admin Users"],
+    tags: [OPEN_API_TAG],
     summary: "전체 회원 목록 조회",
     security: [{ bearerAuth: [] }],
     request: {
@@ -91,7 +93,7 @@ registry.registerPath({
 registry.registerPath({
     method: "get",
     path: "/admin/users/{id}",
-    tags: ["Admin Users"],
+    tags: [OPEN_API_TAG],
     summary: "회원 상세 조회",
     security: [{ bearerAuth: [] }],
     request: {
@@ -109,7 +111,7 @@ registry.registerPath({
 registry.registerPath({
     method: "post",
     path: "/admin/users",
-    tags: ["Admin Users"],
+    tags: [OPEN_API_TAG],
     summary: "회원 생성 (관리자)",
     security: [{ bearerAuth: [] }],
     request: {
@@ -126,7 +128,7 @@ registry.registerPath({
 registry.registerPath({
     method: "put",
     path: "/admin/users/{id}",
-    tags: ["Admin Users"],
+    tags: [OPEN_API_TAG],
     summary: "회원 정보 수정 (관리자)",
     security: [{ bearerAuth: [] }],
     request: {
@@ -143,7 +145,7 @@ registry.registerPath({
 registry.registerPath({
     method: "delete",
     path: "/admin/users/{id}",
-    tags: ["Admin Users"],
+    tags: [OPEN_API_TAG],
     summary: "회원 삭제 (관리자)",
     security: [{ bearerAuth: [] }],
     request: {

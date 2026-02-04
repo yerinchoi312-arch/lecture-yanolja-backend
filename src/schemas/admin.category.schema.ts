@@ -4,6 +4,8 @@ import { registry } from "../config/openApi";
 
 extendZodWithOpenApi(z);
 
+const OPEN_API_TAG = "Admin/Categories";
+
 export const CreateCategorySchema = z.object({
     name: z.string().min(1, "카테고리 이름을 입력해주세요.").openapi({ example: "호텔" }),
     path: z.string().min(1, "URL 경로를 입력해주세요.").openapi({ example: "hotel" }),
@@ -20,7 +22,7 @@ export type CreateSubCategoryInput = z.infer<typeof CreateSubCategorySchema>;
 registry.registerPath({
     method: "post",
     path: "/admin/categories",
-    tags: ["Admin Category"],
+    tags: [OPEN_API_TAG],
     summary: "1차 카테고리 생성",
     description: "이미지 파일과 함께 1차 카테고리를 생성합니다.",
     security: [{ bearerAuth: [] }],
@@ -62,7 +64,7 @@ registry.registerPath({
 registry.registerPath({
     method: "post",
     path: "/admin/categories/sub",
-    tags: ["Admin Category"],
+    tags: [OPEN_API_TAG],
     summary: "2차 카테고리 생성",
     security: [{ bearerAuth: [] }],
     request: {
@@ -81,7 +83,7 @@ registry.registerPath({
 registry.registerPath({
     method: "delete",
     path: "/admin/categories/{id}",
-    tags: ["Admin Category"],
+    tags: [OPEN_API_TAG],
     summary: "1차 카테고리 삭제",
     security: [{ bearerAuth: [] }],
     request: { params: z.object({ id: z.string() }) },
@@ -91,7 +93,7 @@ registry.registerPath({
 registry.registerPath({
     method: "delete",
     path: "/admin/categories/sub/{id}",
-    tags: ["Admin Category"],
+    tags: [OPEN_API_TAG],
     summary: "2차 카테고리 삭제",
     security: [{ bearerAuth: [] }],
     request: { params: z.object({ id: z.string() }) },
