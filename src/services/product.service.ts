@@ -27,6 +27,8 @@ export class ProductService {
                 orderBy: { createdAt: "desc" },
                 select: {
                     id: true,
+                    categoryId: true,
+                    subCategoryId: true,
                     name: true,
                     address: true,
                     images: {
@@ -51,6 +53,8 @@ export class ProductService {
 
             return {
                 id: product.id,
+                categoryId: product.categoryId,
+                subCategoryId: product.subCategoryId,
                 name: product.name,
                 address: product.address,
                 thumbnail: product.images[0]?.url || "",

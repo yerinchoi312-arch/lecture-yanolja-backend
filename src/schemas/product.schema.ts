@@ -17,6 +17,8 @@ export const ProductParamsSchema = z.object({
 
 export const ProductListItemSchema = z.object({
     id: z.number(),
+    categoryId: z.number().openapi({ example: 1, description: "카테고리 ID" }),
+    subCategoryId: z.number().openapi({ example: 1, description: "하위 카테고리 ID" }),
     name: z.string(),
     address: z.string(),
     thumbnail: z.string().openapi({ description: "대표 이미지 1장" }),

@@ -7,8 +7,8 @@
         "dev": "nodemon --exec tsx src/app.ts",
         "build": "tsc",
         "start": "node dist/app.js",
-        "prisma:migrate": "npx prisma migrate dev",
-        "prisma:generate": "npx prisma generate"
+        "prisma:migrate": "pnpm exec prisma migrate dev",
+        "prisma:generate": "pnpm exec prisma generate"
     },
     "keywords": [],
     "author": "",
