@@ -158,7 +158,19 @@ export class OrderService {
             prisma.order.count({ where: { userId } }),
             prisma.order.findMany({
                 where: { userId },
-                include: { items: { include: { roomType: true } } },
+                include: {
+                    items: {
+                        include: {
+                            roomType: {
+                                include: {
+                                    product: {
+                                        select: { name: true },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
                 orderBy: { createdAt: "desc" },
                 skip,
                 take: limit,
@@ -180,7 +192,19 @@ export class OrderService {
     async getOrderDetail(userId: number, orderId: number) {
         const order = await prisma.order.findUnique({
             where: { id: orderId },
-            include: { items: { include: { roomType: true } } },
+            include: {
+                items: {
+                    include: {
+                        roomType: {
+                            include: {
+                                product: {
+                                    select: { name: true },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         });
 
         if (!order || order.userId !== userId) {

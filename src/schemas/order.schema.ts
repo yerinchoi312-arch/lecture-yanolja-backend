@@ -35,11 +35,16 @@ export const ConfirmPaymentSchema = z.object({
 
 const OrderItemResponseSchema = z.object({
     id: z.number(),
-    roomType: z.object({
-        id: z.number(),
-        name: z.string(),
-        image: z.string(),
-    }).nullable(),
+    roomType: z
+        .object({
+            id: z.number(),
+            name: z.string(),
+            image: z.string(),
+            product: z.object({
+                name: z.string().openapi({ example: "신라호텔" }),
+            }),
+        })
+        .nullable(),
     quantity: z.number(),
     price: z.number(),
 });
