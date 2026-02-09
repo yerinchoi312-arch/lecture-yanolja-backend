@@ -76,9 +76,11 @@ export class OrderService {
     async confirmPayment(userId: number, data: ConfirmPaymentInput) {
         const { paymentKey, orderId, amount } = data;
 
+        const dbOrderId = Number(orderId.split("_")[1]);
+
         // 2-1. 주문 정보 확인 (금액 검증)
         const order = await prisma.order.findUnique({
-            where: { id: Number(orderId) },
+            where: { id: dbOrderId },
         });
 
         if (!order) throw new HttpException(404, "주문을 찾을 수 없습니다.");
@@ -91,19 +93,19 @@ export class OrderService {
 
         // 2-2. 토스페이먼츠 승인 API 호출
         const widgetSecretKey = process.env.TOSS_SECRET_KEY;
-        const encryptedSecretKey = Buffer.from(`${widgetSecretKey}:`).toString("base64");
+        const encryptedSecretKey = "Basic " + Buffer.from(widgetSecretKey + ":").toString("base64");
 
         try {
             const response = await axios.post(
                 "https://api.tosspayments.com/v1/payments/confirm",
                 {
-                    orderId: String(orderId),
+                    orderId,
                     amount,
                     paymentKey,
                 },
                 {
                     headers: {
-                        Authorization: `Basic ${encryptedSecretKey}`,
+                        Authorization: encryptedSecretKey,
                         "Content-Type": "application/json",
                     },
                 },
