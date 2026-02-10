@@ -111,16 +111,24 @@ export class OrderService {
                 },
             );
 
-            // Axios는 response.data에 실제 응답 본문이 들어있습니다.
             const paymentData = response.data;
-
-            // 3. DB 업데이트
             const paymentMethod = paymentData.method || "간편결제";
 
-            await prisma.$transaction([
+            const [updatedOrder, _] = await prisma.$transaction([
                 prisma.order.update({
                     where: { id: order.id },
                     data: { status: "PAID" },
+                    include: {
+                        items: {
+                            include: {
+                                roomType: {
+                                    include: {
+                                        product: { select: { name: true } },
+                                    },
+                                },
+                            },
+                        },
+                    },
                 }),
                 prisma.payment.create({
                     data: {
@@ -134,7 +142,10 @@ export class OrderService {
                 }),
             ]);
 
-            return paymentData;
+            return {
+                payment: paymentData,
+                order: updatedOrder,
+            };
         } catch (error: any) {
             if (axios.isAxiosError(error)) {
                 // 토스 API가 400, 500 에러를 뱉었을 때 여기로 들어옵니다.

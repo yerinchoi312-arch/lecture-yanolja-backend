@@ -103,7 +103,8 @@ registry.registerPath({
     path: "/orders/confirm",
     tags: [OPEN_API_TAG], // 상수 사용
     summary: "결제 승인 (토스페이먼츠)",
-    description: "프론트엔드에서 결제 성공 후 받은 paymentKey 등을 이용해 서버에서 최종 승인 처리를 합니다.",
+    description:
+        "프론트엔드에서 결제 성공 후 받은 paymentKey 등을 이용해 서버에서 최종 승인 처리를 합니다.",
     security: [{ bearerAuth: [] }],
     request: {
         body: {
@@ -111,7 +112,20 @@ registry.registerPath({
         },
     },
     responses: {
-        200: { description: "결제 및 주문 완료" },
+        200: {
+            description: "결제 및 주문 완료",
+            content: {
+                "application/json": {
+                    schema: z.object({
+                        message: z.string(),
+                        data: z.object({
+                            payment: z.object({}).openapi({ description: "토스 결제 객체 (Any)" }),
+                            order: OrderDetailSchema,
+                        }),
+                    }),
+                },
+            },
+        },
         400: { description: "결제 금액 불일치 또는 승인 실패" },
     },
 });
