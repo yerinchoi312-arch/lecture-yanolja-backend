@@ -1,6 +1,6 @@
 import { prisma } from "../config/prisma";
 import { HttpException } from "../utils/exception.utils";
-import { ConfirmPaymentInput, CreateOrderInput } from "../schemas/order.schema";
+import { CancelOrderInput, ConfirmPaymentInput, CreateOrderInput } from "../schemas/order.schema";
 import { PaginationQuery } from "../schemas/common.schema";
 import axios from "axios";
 import { Prisma } from "@prisma/client";
@@ -224,5 +224,35 @@ export class OrderService {
             throw new HttpException(404, "주문을 찾을 수 없거나 권한이 없습니다.");
         }
         return order;
+    }
+
+    async cancelOrder(userId: number, orderId: number, _: CancelOrderInput) {
+        const order = await prisma.order.findUnique({
+            where: { id: orderId },
+            include: { payment: true }, // 결제 정보(paymentKey) 필요
+        });
+
+        if (!order) throw new HttpException(404, "주문을 찾을 수 없습니다.");
+        if (order.userId !== userId)
+            throw new HttpException(403, "본인의 주문만 취소할 수 있습니다.");
+
+        if (order.status === "CANCELED") throw new HttpException(400, "이미 취소된 주문입니다.");
+
+         await prisma.$transaction([
+            prisma.order.update({
+                where: { id: orderId },
+                data: { status: "CANCELED" },
+            }),
+            ...(order.payment
+                ? [
+                      prisma.payment.update({
+                          where: { id: order.payment.id },
+                          data: { status: "CANCELLED" },
+                      }),
+                  ]
+                : []),
+        ]);
+
+        return { message: "주문이 정상적으로 취소되었습니다." };
     }
 }

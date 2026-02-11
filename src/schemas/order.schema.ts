@@ -24,14 +24,15 @@ export const CreateOrderSchema = z.object({
     items: z.array(OrderItemInputSchema).min(1, "최소 1개의 객실을 선택해야 합니다."),
 });
 
-// [추가] 토스페이먼츠 결제 승인 요청 스키마
 export const ConfirmPaymentSchema = z.object({
     paymentKey: z.string().openapi({ example: "tgen_...", description: "토스 결제 키" }),
     orderId: z.string().openapi({ example: "10", description: "주문 ID (String)" }),
     amount: z.number().openapi({ example: 300000, description: "결제 금액" }),
 });
 
-// --- Output Schemas ---
+export const CancelOrderSchema = z.object({
+    cancelReason: z.string().min(1, "취소 사유를 입력해주세요.").openapi({ example: "단순 변심" }),
+});
 
 const OrderItemResponseSchema = z.object({
     id: z.number(),
@@ -62,6 +63,7 @@ export const OrderDetailSchema = z.object({
 
 export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;
 export type ConfirmPaymentInput = z.infer<typeof ConfirmPaymentSchema>;
+export type CancelOrderInput = z.infer<typeof CancelOrderSchema>;
 
 // --- OpenAPI Registry ---
 
@@ -161,5 +163,24 @@ registry.registerPath({
     request: { params: z.object({ id: z.string() }) },
     responses: {
         200: { description: "조회 성공" },
+    },
+});
+
+registry.registerPath({
+    method: "post",
+    path: "/orders/{id}/cancel",
+    tags: [OPEN_API_TAG],
+    summary: "주문 취소 (환불 포함)",
+    description:
+        "결제 완료된 주문은 토스페이먼츠 환불 API를 호출하고, 대기 중인 주문은 즉시 취소 처리합니다.",
+    security: [{ bearerAuth: [] }],
+    request: {
+        params: z.object({ id: z.string() }),
+        body: { content: { "application/json": { schema: CancelOrderSchema } } },
+    },
+    responses: {
+        200: { description: "취소 성공" },
+        400: { description: "이미 취소되었거나 취소할 수 없는 상태" },
+        403: { description: "권한 없음" },
     },
 });

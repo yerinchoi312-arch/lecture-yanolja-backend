@@ -66,4 +66,16 @@ export class OrderController {
             next(error);
         }
     }
+
+    async cancelOrder(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            const orderId = Number(req.params.id);
+            const result = await orderService.cancelOrder(userId, orderId, req.body);
+
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
