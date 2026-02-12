@@ -1,8 +1,12 @@
 import { Router } from "express";
 import { ReviewController } from "../controllers/review.controller";
 import { authenticateJwt } from "../middlewares/auth.middleware";
-import { validateBody } from "../middlewares/validation.middleware";
-import { CreateReviewSchema, UpdateReviewSchema } from "../schemas/review.schema";
+import { validateBody, validateQuery } from "../middlewares/validation.middleware";
+import {
+    CheckReviewQuerySchema,
+    CreateReviewSchema,
+    UpdateReviewSchema,
+} from "../schemas/review.schema";
 
 const router = Router();
 const controller = new ReviewController();
@@ -13,6 +17,7 @@ router.get("/", controller.getReviews);
 // 2. 인증이 필요한 라우트
 router.use(authenticateJwt);
 
+router.get("/check", validateQuery(CheckReviewQuerySchema), controller.checkHasReview);
 router.post("/", validateBody(CreateReviewSchema), controller.createReview);
 router.get("/me", controller.getMyReviews);
 router.put("/:id", validateBody(UpdateReviewSchema), controller.updateReview);

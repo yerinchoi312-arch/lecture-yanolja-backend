@@ -111,6 +111,21 @@ export class ReviewService {
         };
     }
 
+    async checkHasReview(userId: number, roomTypeId: number) {
+        const review = await prisma.review.findFirst({
+            where: {
+                userId,
+                roomTypeId,
+            },
+            select: { id: true },
+        });
+
+        return {
+            hasReview: !!review,
+            reviewId: review?.id || null
+        };
+    }
+
     async updateReview(userId: number, reviewId: number, data: UpdateReviewInput) {
         const review = await prisma.review.findUnique({ where: { id: reviewId } });
 

@@ -52,6 +52,13 @@ export const ReviewListQuerySchema = PaginationQuerySchema.extend({
         .openapi({ description: "정렬 순서" }),
 });
 
+export const CheckReviewQuerySchema = z.object({
+    roomTypeId: z.coerce
+        .number()
+        .min(1)
+        .openapi({ example: 10, description: "확인할 객실 타입 ID" }),
+});
+
 // --- Output Schemas ---
 
 const ReviewImageSchema = z.object({
@@ -87,6 +94,7 @@ export const ReviewResponseSchema = z
 export type CreateReviewInput = z.infer<typeof CreateReviewSchema>;
 export type UpdateReviewInput = z.infer<typeof UpdateReviewSchema>;
 export type ReviewListQuery = z.infer<typeof ReviewListQuerySchema>;
+export type CheckReviewQuery = z.infer<typeof CheckReviewQuerySchema>;
 
 // --- OpenAPI Registry ---
 
@@ -136,6 +144,34 @@ registry.registerPath({
     request: { query: PaginationQuerySchema },
     responses: {
         200: { description: "조회 성공" },
+    },
+});
+
+registry.registerPath({
+    method: "get",
+    path: "/reviews/check", // ID 파라미터 라우트보다 위에 정의해야 함
+    tags: [OPEN_API_TAG],
+    summary: "리뷰 작성 여부 확인",
+    description: "로그인한 사용자가 특정 객실 타입에 대해 이미 리뷰를 작성했는지 확인합니다.",
+    security: [{ bearerAuth: [] }],
+    request: {
+        query: CheckReviewQuerySchema,
+    },
+    responses: {
+        200: {
+            description: "확인 성공",
+            content: {
+                "application/json": {
+                    schema: z.object({
+                        hasReview: z.boolean().openapi({ description: "리뷰 작성 여부" }),
+                        reviewId: z
+                            .number()
+                            .nullable()
+                            .openapi({ description: "작성한 리뷰 ID (없으면 null)" }),
+                    }),
+                },
+            },
+        },
     },
 });
 

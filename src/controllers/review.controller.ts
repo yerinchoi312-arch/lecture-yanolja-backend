@@ -37,6 +37,19 @@ export class ReviewController {
         }
     }
 
+    async checkHasReview(req: Request, res: Response, next: NextFunction) {
+        try {
+            const userId = req.user!.id;
+            const roomTypeId = Number(req.query.roomTypeId);
+
+            const result = await reviewService.checkHasReview(userId, roomTypeId);
+
+            res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getMyReviews(req: Request, res: Response, next: NextFunction) {
         try {
             const userId = req.user!.id;
