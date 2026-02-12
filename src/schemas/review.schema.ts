@@ -70,6 +70,12 @@ export const ReviewResponseSchema = z
         content: z.string(),
         rating: z.number(),
         user: ReviewUserSchema,
+        product: z
+            .object({
+                id: z.number(),
+                name: z.string().openapi({ example: "신라호텔" }),
+            })
+            .nullable(),
         roomType: z.object({
             id: z.number(),
             name: z.string().openapi({ example: "디럭스 룸" }),

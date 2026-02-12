@@ -60,6 +60,7 @@ export class ReviewService {
                 include: {
                     user: { select: { name: true } },
                     roomType: { select: { id: true, name: true } },
+                    product: { select: { id: true, name: true } },
                     images: true,
                 },
                 orderBy,
@@ -90,6 +91,7 @@ export class ReviewService {
                 include: {
                     user: { select: { name: true } },
                     roomType: { select: { id: true, name: true } },
+                    product: { select: { id: true, name: true } },
                     images: true,
                 },
                 orderBy: { createdAt: "desc" },
