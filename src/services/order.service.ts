@@ -177,7 +177,10 @@ export class OrderService {
                             roomType: {
                                 include: {
                                     product: {
-                                        select: { name: true },
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                        },
                                     },
                                 },
                             },
@@ -238,7 +241,7 @@ export class OrderService {
 
         if (order.status === "CANCELED") throw new HttpException(400, "이미 취소된 주문입니다.");
 
-         await prisma.$transaction([
+        await prisma.$transaction([
             prisma.order.update({
                 where: { id: orderId },
                 data: { status: "CANCELED" },
