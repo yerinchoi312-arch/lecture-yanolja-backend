@@ -214,7 +214,10 @@ export class OrderService {
                         roomType: {
                             include: {
                                 product: {
-                                    select: { name: true },
+                                    select: {
+                                        name: true,
+                                        id: true,
+                                    },
                                 },
                             },
                         },
